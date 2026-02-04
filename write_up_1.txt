@@ -1,0 +1,72 @@
+For this recipe, it will be necessary to download nmap and dirb utilities.
+
+nmap is a network tool usefull to scan an IP and find a lot of data about running services etc.
+
+dirb is a web content scanner used to find any hidden or existing web files and directories.
+dirb is included in Kali distribution. It will be easier and practical to set up another VM with Kali on it to carry on.
+
+curl is another way to retrive information with the -k flag to bypass trust chain checks but I could'nt find the other web pages without dirb.
+
+1) Find your IP range:
+
+ip a
+
+2) You will find your IP with the CIDR range. Usually /24
+scan your IP with nmap and display the list of running services:
+
+nmap -sL <your_IP>
+
+in the list you will find the boot2root server with the corresponding IP:
+
+In my case:
+"Nmap scan report for borntosechackme.home (192.168.1.29)"
+
+3) scan the boot2root server with nmap. I chose to use -A flag. it stand for agressive scan. This way, a lot of informations will be displayed.
+Interesting informations like expired ssl certification will be displayed, the services versions etc.
+
+nmap -A Nmap <BOOT2ROOT_IP>
+
+4) Here you can see a list of open port with the corresponding versions.
+- Appache
+- openssh
+- vsftpd
+etc
+
+5) Before searching for known vulnerabilities for theses versions, lets use dirb on our bornToSecHackMe IP
+
+dirb https://192.168.1.29/
+
+Here, you will see some interesting pages:
+<IP>/forum
+<IP>/forum/js
+<IP>/forum/templates_c
+<IP>/phpmyadmin
+<IP>/webmail
+
+Each page have some interesting things to look. But before any code, we will read the content of the forum.
+
+6) Type on the nav bar: https://<BOOT2ROOT_IP>/forum
+ 
+The forum is a good place to try the "social engineering" method.
+The obvious thread is: "problem login?"
+Here, we can see sshd logs of connexion attempts.
+There is a lot of hints and usefull information:
+
+t 5 08:45:29 BornToSecHackMe sshd[7547]: Failed password for invalid user !q\]Ej?*5K5cy*AJ from 161.202.39.38 port 57764 ssh2
+Oct 5 08:45:29 BornToSecHackMe sshd[7547]: Received disconnect from 161.202.39.38: 3: com.jcraft.jsch.JSchException: Auth fail [preauth]
+Oct 5 08:46:01 BornToSecHackMe CRON[7549]: pam_unix(cron:session): session opened for user lmezard by (uid=1040)
+
+The first line is a mistake: the password was entered instead of the username. 
+Then we can see the user who made the mistake, line 3 : lmezard
+
+7) Unfortunately, this pair user/password won't let us connect on the BornToSec server.
+However, we can connect on the website.
+
+8) Here, we can find lmezard's email by clicking on the user name after log in.
+
+9) With this email and the previous password, we can log to the webmail on the page https://<BOOT2ROOT_IP>/webmail
+
+10) There is a mail with the object "DB ACCESS". There is a password for root user.
+But it is not the ssh credentials yet. It is a way to access the web DB.
+
+11) On https://<BOOT2ROOT_IP>/phpmyadmin, use root as ID and the password given in the mail.
