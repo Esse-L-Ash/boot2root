@@ -92,4 +92,55 @@ type ftp <IP_VM>
 
 There is a readme and a fun files
 
+The READMe is just a taunt. It says to resolve the challenge to havie ths ssh password.
+
+
+The file fun have lot of data with .pcap result
+
+But inside we can see C function with getme functions from 1 to 12
+
+We tried some bash command but in ftp you cannot perform some
+
+Download the fun file with get command
+get fun
+
+The you can grep, etc
+
+We can see some extract of C function returning a char and printf fuctions. Some are taunting some provided valuable information:
+	printf("%c",getme1());
+	printf("%c",getme2());
+	printf("%c",getme3());
+	printf("%c",getme4());
+	printf("%c",getme5());
+	printf("%c",getme6());
+	printf("%c",getme7());
+	printf("%c",getme8());
+	printf("%c",getme9());
+	printf("%c",getme10());
+	printf("%c",getme11());
+	printf("%c",getme12());
+	printf("\n");
+	printf("Now SHA-256 it and submit");
+
+getme8 return 'w' but a lot of functions are incomplete
+It is not possible to retrieve them with grep
+When doing grep on fun we can see that it is a binary file
+
+with file cmd we identify that fun is a POSIX tar archive
+
+file fun
+> fun: POSIX tar archive (GNU)
+
+when doing tar -xvf fun 
+
+we have an unsufferable amount of .pcap files
+
+When doing head ft_fun/<file>.pcap we can retrieve the valid code
+
+we can get the good code with grep -R
+
+grep -R "getme|return" ft_fun
+
+
+
 
