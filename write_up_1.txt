@@ -142,6 +142,29 @@ c) We sort the files
 d) We get the return in the right order and display it.
 e) We use sha256sum like suggested in the printf.
 
+16) We can now connect in ssh with Laurie's password. Still not root.
+Another challenge. It is a binary called bomb. There is 6 phases to defuse the bin bomb and get another password, this time for the user Thor.
+
+We upload the binary to https://dogbolt.org/. It convert the binary to human readable code source.
+
+Phase1:
+The code is transparent:
+int32_t result = strings_not_equal(arg1, "Public speaking is very easy.");
+explode_bomb()
+
+The right input for phase 1 is:
+Public speaking is very easy.
+
+Phase2: [HERE: LES MATHS DE ROMANE TODO !!!!!!!!!!]
+
+Phase3: Thanks to the checks done we know that we need three params one number, one char and one number.
+There is a switch case with various possible combinations.
+
+Phase4: Fibonacci number resulting to 55. We copied the code and tried on our own.
+
+Phase5: [HERE: MATHS AGAIN ALED]
+
+Phase6: 
 
 
 
