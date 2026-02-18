@@ -1,6 +1,6 @@
 # /bin/bash
 
-# verifier qu'il n'y a qu'un "//file par" fichier 
+# verifier qu'il n'y a qu'un "//file" par fichier 
 # grep "//file" ft_fun/* -c | grep -v ":1"
 
 # get list of relevant files
@@ -30,7 +30,7 @@ get_pass() {
     done
 }
 
-get_pass
-echo ""
-echo "let's use sha256sum on this string"
+# get_pass
+# echo ""
+# echo "let's use sha256sum on this string"
 get_pass | sha256sum
