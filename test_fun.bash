@@ -22,7 +22,7 @@ get_pass() {
     # files_numerotation | sort -h
     # echo "We can now, display the str in the right order thanks to sed who isolate the char and echo -n"
 
-    # /!\ THE LINES ABOSE TEMPERS with the sha256 sum ! /!\
+    # /!\ THE LINES ABOVE TEMPERS with the sha256 sum ! /!\
 
     for c in $(cat $(files_numerotation | sort -h | cut -d _ -f 2-) | grep -E "return" | sed "s/.*'\(\w\)'.*/\1/")
     do
@@ -30,7 +30,7 @@ get_pass() {
     done
 }
 
-# get_pass
-# echo ""
-# echo "let's use sha256sum on this string"
+get_pass
+echo ""
+echo "let's use sha256sum on this string"
 get_pass | sha256sum

