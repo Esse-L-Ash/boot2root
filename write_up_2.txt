@@ -1,0 +1,136 @@
+For this writeup we resume when connected on laurie session.
+
+Instead of following the clues we will focus on laurie session.
+
+There is multiple known vulnerabilities to perform a privilege escalation.
+- spawning root shell (what we did with our first solution)
+- weak files permission
+- service exploits
+- misconfiguration for SUDO, clear password, SUID files
+- weak configuration for cron jobs
+- kernel exploit
+
+We can look for weaknesses manually by using cat and explore the main diirectories
+like 
+
+clear passwords, weak configuration:
+
+cat /etc/passwd
+ls -l /etc/shadow
+cat /etc/shadow
+
+SUID files weaknesses:
+find / -type f -a \( -perm -u+s -o -perm -g+s \) -exec -l {} \; 2> /dev/null
+find / -type f -perm -4000 -user root 2>/dev/null
+
+SUDO weaknesses:
+sudo -i 
+sudo /bin/bash
+sudo passwd
+
+/etc/sudoers with env_resest option set 
+sudo -l 
+
+CRON:
+ls -l /var/spool/cron/crontabs/
+ls -l /etc/crontab
+ls -l /etc/cron.*
+ls -la /etc/cron* /var/spool/cron/crontabs
+
+For each services we can search for known vulnerabilities for example:
+the apache version 2.2.22 is known to have a breach.
+
+But today there is lot of tools scanning the machine and parse 
+this "known vulnerabilities list" methodically.
+
+The legal hackers candidating for the OSCP exam have the same method (rootme etc):
+
+- Do the enumeration with an existing tool on the target system.
+- Find the corresponding documentation (CVE: Common Vulnerabilities and Exposures)
+with the given script (POC: Proof of Concept) to exploit the known vulneravility on platform like DB exploit
+
+After manullay running basic command shown on OSCP tutorials, we see that the target machine is well protected.
+No cron script for us to use, no obvious weak permission nor weak configuration (but we could have miss some!)
+
+So the last resort is to use kernel exploit. Kernel exploits can be unstable and could cause system-crash.
+uname -a 
+
+Find matching exploit on ExploitDb.
+
+It is sometime touchy to find the exact exploit. the majority of the exploit are for 64 bits architecture
+Our vm is on 32 bits. The exact version is needed.
+
+We struggled to find a perfect match so we used Linux exploit suggester script to scan the target.
+
+curl -L -o linux-exploit-suggester-2.pl https://raw.githubusercontent.com/jondonas/linux-exploit-suggester-2/master/linux-exploit-suggester-2.pl
+
+chmod +x linux-exploit-suggester-2.pl
+
+We execute the script and the outpu gives us four exploits:
+
+- perf_swevent_init, 26131
+This one does not work because it is an exploit created for 64 bits architecture
+
+- MSR driver privilege escalation 27297
+This is not the right version, it works only on Linux Kernel 3.7.6 (RedHat)
+it requires CONFIG_X86_MSR and uid 0
+MSR and CAP_SYS_NICE are needed
+lsmod | grep msr
+
+- xorg-x11-server 45697
+Xorg is a graphical tool used to display window etc on Linux.
+This exploit use a bug introduced in the 1.19 version. We are on 1.11
+
+
+- dirty Cow Race Condition (SUID method) 40616
+This one can be configured to work on 32 bits.
+But the Race condition is really difficult to achieve and this exploit is really unstable.
+
+We look for another Dirty Cow and we found one for kernel version between 2.6.22 and 3.9
+still a race condition but more stable.
+
+Linux Kernel 2.6.22 < 3.9 - 'Dirty COW' 'PTRACE_POKEDATA' Race Condition Privilege Escalation (/etc/passwd Method) 
+40839
+
+This one use ptrace() instead of /proc/self/mem
+Do not depend on architecture because attacks a file and not a binary
+
+So it works ! 
+
+Dirty COW is a famous Linux kernel vulnerability.
+It exploit a race condition in the copy-on-write mechanism in the kernel memory management subsystem.
+
+A race condition occurs when multiple thread or processes are simultaneously trying to modify and retrieve shared data.
+This happen when the synchroniation and sequencing are not coordinated.
+
+The copy on write mechanism allows both parent and child share the same memory pages until one of them tries to modify the data.
+When one process tries to write to a shared mem page the kernel make a copy.
+The mechanism prevent exec pattern to be expensive.
+
+With the right timing, an attacker can turn a read-only mapping of a file
+into a writable mechanism.
+
+This script use this breach to write in /etc/passwd.
+
+It overwrite the root entry and substitute it by another user with root permission.
+And create a copy. We will need to restore it because it is impossible to use sudo command si root does not exist anymore.
+
+1) We rune the exploit
+
+gcc -pthread 40839.c -o exploit_dirty_cow -lcrypt 
+
+2) We can give a new password for the newly created user
+
+3) We can add Laurie as sudoer 
+
+usermod -aG sudo Laurie
+
+4) We restore the file 
+
+mv /tmp/passwd.bak /etc/passwd
+
+5) We log in as Laurie
+
+6) sudo -s
+
+
