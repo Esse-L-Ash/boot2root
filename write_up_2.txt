@@ -39,19 +39,20 @@ ls -la /etc/cron* /var/spool/cron/crontabs
 For each services we can search for known vulnerabilities for example:
 the apache version 2.2.22 is known to have a breach.
 
-But today there is lot of tools scanning the machine and parse 
-this "known vulnerabilities list" methodically.
+But today there is lot of tools scanning the machine and check for each of  
+these "known vulnerabilities list" methodically.
 
 The legal hackers candidating for the OSCP exam have the same method (rootme etc):
 
 - Do the enumeration with an existing tool on the target system.
 - Find the corresponding documentation (CVE: Common Vulnerabilities and Exposures)
-with the given script (POC: Proof of Concept) to exploit the known vulneravility on platform like DB exploit
+with the given script (POC: Proof of Concept) to exploit the known vulnerability on platform like DB exploit
 
 After manullay running basic command shown on OSCP tutorials, we see that the target machine is well protected.
 No cron script for us to use, no obvious weak permission nor weak configuration (but we could have miss some!)
 
 So the last resort is to use kernel exploit. Kernel exploits can be unstable and could cause system-crash.
+Identify kernel version with
 uname -a 
 
 Find matching exploit on ExploitDb.
@@ -65,7 +66,7 @@ curl -L -o linux-exploit-suggester-2.pl https://raw.githubusercontent.com/jondon
 
 chmod +x linux-exploit-suggester-2.pl
 
-We execute the script and the outpu gives us four exploits:
+We execute the script and the output gives us four exploits:
 
 - perf_swevent_init, 26131
 This one does not work because it is an exploit created for 64 bits architecture
@@ -77,7 +78,7 @@ MSR and CAP_SYS_NICE are needed
 lsmod | grep msr
 
 - xorg-x11-server 45697
-Xorg is a graphical tool used to display window etc on Linux.
+Xorg is a graphical tool used to display windows etc on Linux.
 This exploit use a bug introduced in the 1.19 version. We are on 1.11
 
 
@@ -92,7 +93,7 @@ Linux Kernel 2.6.22 < 3.9 - 'Dirty COW' 'PTRACE_POKEDATA' Race Condition Privile
 40839
 
 This one use ptrace() instead of /proc/self/mem
-Do not depend on architecture because attacks a file and not a binary
+It does not depend on architecture because it attacks a file and not a binary
 
 So it works ! 
 
@@ -103,7 +104,7 @@ A race condition occurs when multiple thread or processes are simultaneously try
 This happen when the synchroniation and sequencing are not coordinated.
 
 The copy on write mechanism allows both parent and child share the same memory pages until one of them tries to modify the data.
-When one process tries to write to a shared mem page the kernel make a copy.
+When one process tries to write to a shared memory page the kernel makes a copy.
 The mechanism prevent exec pattern to be expensive.
 
 With the right timing, an attacker can turn a read-only mapping of a file
@@ -112,9 +113,9 @@ into a writable mechanism.
 This script use this breach to write in /etc/passwd.
 
 It overwrite the root entry and substitute it by another user with root permission.
-And create a copy. We will need to restore it because it is impossible to use sudo command si root does not exist anymore.
+And create a copy. We will need to restore it because it is impossible to use sudo command if root does not exist anymore.
 
-1) We rune the exploit
+1) We run the exploit
 
 gcc -pthread 40839.c -o exploit_dirty_cow -lcrypt 
 
