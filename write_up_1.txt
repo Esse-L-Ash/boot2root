@@ -174,14 +174,27 @@ explode_bomb()
 The right input for phase 1 is:
 Public speaking is very easy.
 
-Phase2: [HERE: LES MATHS DE ROMANE TODO !!!!!!!!!!]
+Phase2: We need 6 numbers. We can find in the phase_2 function, this code:
+```
+if ( v3[0] != 1 )
+    explode_bomb();
+for ( i = 1; i <= 5; ++i )
+{
+    result = v3[i - 1] * (i + 1);
+    if ( v3[i] != result )
+      explode_bomb();
+}
+```
+So we are understanding that the first number to give is '1', and the others are taking the previous number and multiplying it by 'i + 1'. So logically, the second number is '1 * 2', so '2'. The third is '2 * 3', so '6', etc. So the final result is '1 2 6 24 120 720'.
 
 Phase3: Thanks to the checks done we know that we need three params one number, one char and one number.
-There is a switch case with various possible combinations.
+There is a switch case with various possible combinations. We understood later that the good combination to use is '1 b 214'.
 
-Phase4: Fibonacci number resulting to 55. We copied the code and tried on our own.
+Phase4: Fibonacci number resulting to 55. We copied the code and tried on our own. The result is '9'.
 
-Phase5: [HERE: MATHS AGAIN ALED]
+Phase5: The purpose of this phase is to find the correct 6 letters to recover the word 'giants'. The phase take each letter we entered and do an 'and' operator with '0xf', then use the result as a position in a given array, correspondig to an another letter.
+The array is: 'isrveawhobpnutfg'
+So the goods letters to enter are 'opekmq'.
 
 Phase 6: The program waits for 6 digits, all between 1 and 6.
 All the digits must be different.
