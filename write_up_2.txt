@@ -3,7 +3,6 @@ For this writeup we resume when connected on laurie session.
 Instead of following the clues we will focus on laurie session.
 
 There is multiple known vulnerabilities to perform a privilege escalation.
-- spawning root shell (what we did with our first solution)
 - weak files permission
 - service exploits
 - misconfiguration for SUDO, clear password, SUID files
