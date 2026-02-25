@@ -11,16 +11,14 @@ ip a
 2) We will find our IP with the CIDR range. Usually /24
 We scan the IP with nmap and display the list of running services:
 
-nmap -sL <your_IP>
+nmap <your_IP>
 
-In the list we find the boot2root server with the corresponding IP:
-
-In our case:
-"Nmap scan report for borntosechackme.home (192.168.1.29)"
+This command output the scan report for our vm.
+We see open port for ftp, ssh, http, imap https
 
 3) Scan the boot2root server with nmap with -sV or -A flags.
 
-nmap -A Nmap <BOOT2ROOT_IP>
+nmap -sV Nmap <BOOT2ROOT_IP>
 
 4) Here we can see a list of open port with the corresponding versions.
 - Appache (2.2.22)
@@ -30,7 +28,7 @@ etc
 
 5) Before searching for known vulnerabilities for theses versions, lets use dirb on our bornToSecHackMe IP
 
-dirb https://192.168.1.29/
+dirb https://<IP>/
 
 Here, there is some interesting pages:
 <IP>/forum
