@@ -9,7 +9,7 @@ There is multiple known vulnerabilities to perform a privilege escalation.
 - weak configuration for cron jobs
 - kernel exploit
 
-We can look for weaknesses manually by using cat and explore the main diirectories
+We can look for weaknesses manually by using cat and explore the main directories
 like 
 
 clear passwords, weak configuration:
