@@ -84,8 +84,13 @@ We can see the various directories. /home directory is the one under www-data:
 
 ls -la /home
 
-There is a directory LOOKATME. It is the only one with content. 
-there is a file named password. 
+There is a directory LOOKATME. It is the only one with content.
+
+ls -l /home/LOOKATME
+there is a file named password.
+
+cat /home/LOOKATME/password
+
 We get another password for lmezard but still not the root password for bornToSecHackMe.
 
 14) It happens to be credentials for ftp. We can see its open port
