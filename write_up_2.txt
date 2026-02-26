@@ -83,7 +83,6 @@ lsmod | grep msr
 Xorg is a graphical tool used to display windows etc on Linux.
 This exploit use a bug introduced in the 1.19 version. We are on 1.11
 
-
 - dirty Cow Race Condition (SUID method) 40616
 This one can be configured to work on 32 bits.
 But the Race condition is really difficult to achieve and this exploit is really unstable.
@@ -93,6 +92,8 @@ still a race condition but more stable.
 
 Linux Kernel 2.6.22 < 3.9 - 'Dirty COW' 'PTRACE_POKEDATA' Race Condition Privilege Escalation (/etc/passwd Method) 
 40839
+
+https://www.exploit-db.com/exploits/40839
 
 This one use ptrace() instead of /proc/self/mem
 It does not depend on architecture because it attacks a file and not a binary
