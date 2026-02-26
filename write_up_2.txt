@@ -111,7 +111,7 @@ When one process tries to write to a shared memory page the kernel makes a copy.
 The mechanism prevent exec pattern to be expensive.
 
 With the right timing, an attacker can turn a read-only mapping of a file
-into a writable mechanism.
+into a writable file.
 
 This script use this breach to write in /etc/passwd.
 
